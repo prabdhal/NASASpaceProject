@@ -1,44 +1,37 @@
 using UnityEngine;
 
-public class CameraController : MonoBehaviour
+public class FollowCamera : MonoBehaviour
 {
-    public Transform player; // The target the camera follows (usually the player)
-    public float distance; // Distance from the player
-    public float height = 2.0f; // Height above the player
-    public float mouseSensitivity = 4.0f; // Sensitivity for mouse input
+    // Public variable to assign the target object
+    public Transform target;
 
-    public float minAngleClamp;
-    public float maxAngleClamp;
+    // Offset from the target
+    public Vector3 offset = new Vector3(0, 3, -5);
 
-    private float currentAngleX; // Current camera angle around the X-axis
-    private float currentAngleY; // Current camera angle around the Y-axis
+    // Speed at which the camera will interpolate its position
+    public float smoothSpeed = 0.125f;
 
-    void Start()
+    private void LateUpdate()
     {
-        // Initialize angles based on current rotation
-        currentAngleX = transform.eulerAngles.x;
-        currentAngleY = transform.eulerAngles.y;
-    }
+        if (target == null) return;
 
-    void LateUpdate()
-    {
-        // Get mouse input
-        currentAngleY += Input.GetAxis("Mouse X") * mouseSensitivity;
-        currentAngleX -= Input.GetAxis("Mouse Y") * mouseSensitivity;
-        currentAngleX = Mathf.Clamp(currentAngleX, minAngleClamp, maxAngleClamp); // Limit vertical angle
+        // Get the target's forward direction, ignoring the y-axis rotation
+        Vector3 targetForward = target.forward;
 
-        // Calculate the desired rotation
-        Quaternion rotation = Quaternion.Euler(currentAngleX, currentAngleY, 0);
+        // Normalize the forward vector (so we only care about the direction and not the magnitude)
+        targetForward.y = 0; // Keep the y component out so we only care about horizontal rotation
+        targetForward.Normalize();
 
-        // Calculate the target position based on the player position, rotation, and fixed distance
-        Vector3 direction = new Vector3(0, 0, -distance); // Camera's distance from the player
-        Vector3 rotatedDirection = rotation * direction; // Apply rotation to the direction vector
+        // Calculate the desired position only taking into account the forward/backward position
+        Vector3 desiredPosition = target.position + targetForward * offset.z + Vector3.up * offset.y;
 
-        // Set the desired position, ensuring the fixed distance
-        Vector3 wantedPosition = player.position + new Vector3(0, height, 0) + rotatedDirection;
+        // Smoothly interpolate the camera's position for smoother movement
+        Vector3 smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed);
 
-        // Follow and rotate to the desired wanted angle
-        transform.position = wantedPosition;
-        transform.rotation = rotation;
+        // Set the camera's position to the smoothed position
+        transform.position = smoothedPosition;
+
+        // Make the camera look at the target
+        transform.LookAt(target.position + Vector3.up * 1.5f); // Optional: Adjust to look at the target's head area
     }
 }

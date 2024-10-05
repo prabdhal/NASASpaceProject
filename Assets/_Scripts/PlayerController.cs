@@ -1,27 +1,25 @@
-using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerController : MonoBehaviour
 {
+    public CameraManager cam;
     public float moveSpeed = 5f;
+    public float rotationSpeed = 10f;
     public float jumpForce = 5f;
-    public float gravityScale = 2f; // Gravity strength
-    public float rotationSpeed = 10f; // Speed for smooth rotation
-    public Transform planetCenter; // The center of the planet (used to calculate gravity direction)
 
-    private Transform camera;
     private Rigidbody rb;
+    private Vector3 moveDirection;
+    private Transform cameraTransform;
     private bool isGrounded;
+    public Transform planet; // Reference to the planet for gravity
 
     void Start()
     {
-        camera = Camera.main.transform;
         rb = GetComponent<Rigidbody>();
-        rb.freezeRotation = true; // Prevent the player from tipping over
-
-        // Hide the cursor and lock it to the center of the screen
-        Cursor.lockState = CursorLockMode.Locked;
+        cameraTransform = Camera.main.transform; // Reference the camera
+        rb.useGravity = false; // Disable default gravity
+        rb.constraints = RigidbodyConstraints.FreezeRotation; // Prevent default rotation
     }
 
     void Update()
@@ -31,92 +29,63 @@ public class PlayerController : MonoBehaviour
         {
             Jump();
         }
-
-        ApplyGravity();
-        AlignToGroundNormal();
+    }
+    private void LateUpdate()
+    {
+        //cam.HandleAllCameraMovement();
     }
 
     private void MoveInput()
     {
-        float moveHorizontal = Input.GetAxis("Horizontal");
-        float moveVertical = Input.GetAxis("Vertical");
+        // Get input for movement
+        float horizontal = Input.GetAxis("Horizontal");
+        float vertical = Input.GetAxis("Vertical");
 
         // Get the forward and right directions of the camera
-        Vector3 forward = camera.transform.forward;
-        Vector3 right = camera.transform.right;
+        Vector3 cameraForward = Vector3.ProjectOnPlane(cameraTransform.forward, transform.up).normalized;
+        Vector3 cameraRight = Vector3.ProjectOnPlane(cameraTransform.right, transform.up).normalized;
 
-        // Flatten the forward and right vectors to only consider the X and Z axes
-        forward.y = 0f;
-        right.y = 0f;
-        forward.Normalize();
-        right.Normalize();
+        // Calculate movement direction relative to the camera
+        moveDirection = (cameraForward * vertical + cameraRight * horizontal).normalized;
 
-        // Calculate the movement direction relative to the camera
-        Vector3 moveDirection = forward * moveVertical + right * moveHorizontal;
-
-        if (moveDirection.sqrMagnitude > 0.01f) // Only rotate if there is input
+        if (moveDirection.magnitude > 0.1f)
         {
-            RotatePlayer(moveDirection); // Rotate the player relative to the camera
-        }
+            // Move the player in the direction of movement
+            Vector3 targetPosition = rb.position + moveDirection * moveSpeed * Time.deltaTime;
+            rb.MovePosition(targetPosition);
 
-        // Apply the movement
-        Vector3 velocity = moveDirection * moveSpeed;
-        velocity.y = rb.velocity.y; // Maintain the current vertical velocity
-        rb.velocity = velocity;
-    }
-
-    private void RotatePlayer(Vector3 moveDirection)
-    {
-        // Calculate the target rotation based on the movement direction, ensuring the player's "up" stays aligned with the ground normal
-        Vector3 groundNormal = (transform.position - planetCenter.position).normalized; // Ground normal to maintain upright position
-        Quaternion targetRotation = Quaternion.LookRotation(moveDirection, groundNormal); // Use ground normal as up direction
-
-        // Smoothly rotate the player to face the movement direction
-        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * rotationSpeed);
-    }
-
-    private void ApplyGravity()
-    {
-        if (planetCenter != null)
-        {
-            // Calculate the direction from the player to the center of the planet
-            Vector3 directionToPlanet = (planetCenter.position - transform.position).normalized;
-
-            // Apply a force towards the planet's center (simulating gravity)
-            Vector3 gravityForce = directionToPlanet * gravityScale;
-            rb.AddForce(gravityForce, ForceMode.Acceleration);
-        }
-    }
-
-    private void AlignToGroundNormal()
-    {
-        if (planetCenter != null)
-        {
-            // Calculate the ground normal (the direction from the player to the planet's center)
-            Vector3 groundNormal = (transform.position - planetCenter.position).normalized;
-
-            // Create the target rotation to align the player's "up" with the ground normal
-            Quaternion targetRotation = Quaternion.FromToRotation(transform.up, groundNormal) * transform.rotation;
-
-            // Smoothly rotate the player to stand upright relative to the ground
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * rotationSpeed);
+            // Rotate the player to face the movement direction (keep gravity-aligned)
+            Quaternion targetRotation = Quaternion.LookRotation(moveDirection, transform.up);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
         }
     }
 
     private void Jump()
     {
-        rb.velocity = new Vector3(rb.velocity.x, jumpForce, rb.velocity.z); // Set vertical velocity directly
+        rb.AddForce(transform.up * jumpForce, ForceMode.VelocityChange);
     }
 
-    private void FixedUpdate()
+    void FixedUpdate()
     {
-        // Apply custom gravity
         ApplyGravity();
+    }
+
+    private void ApplyGravity()
+    {
+        // Get the direction towards the center of the planet
+        Vector3 gravityDirection = (planet.position - transform.position).normalized;
+        Vector3 playerUp = transform.up;
+
+        // Apply gravity force
+        rb.AddForce(gravityDirection * 10f);
+
+        // Rotate the player to align with the planet's surface
+        Quaternion targetRotation = Quaternion.FromToRotation(playerUp, gravityDirection) * transform.rotation;
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        // Check if the player is grounded
         if (collision.gameObject.CompareTag("Ground"))
         {
             isGrounded = true;
@@ -125,7 +94,6 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionExit(Collision collision)
     {
-        // Set grounded to false when leaving the ground
         if (collision.gameObject.CompareTag("Ground"))
         {
             isGrounded = false;
