@@ -72,6 +72,11 @@ public class PlayerController : MonoBehaviour
 
     private void ApplyGravity()
     {
+        if (!planet)
+        {
+            return;
+        }
+
         // Get the direction towards the center of the planet
         Vector3 gravityDirection = (planet.position - transform.position).normalized;
         Vector3 playerUp = transform.up;

@@ -7,6 +7,11 @@ public class Cam3 : MonoBehaviour
 
     void LateUpdate()
     {
+        if (player == null)
+        {
+            return;
+        }
+
         // Set the position and rotation of the camera to match the player's, with an offset
         transform.position = player.TransformPoint(offset);  // Apply local space offset
         transform.rotation = player.rotation;                // Match player's rotation
