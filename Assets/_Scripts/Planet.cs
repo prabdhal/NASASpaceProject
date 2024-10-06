@@ -4,11 +4,10 @@ public class Planet : MonoBehaviour
 {
     public MeshRenderer renderer;
     public float gravity = 10f; // Gravity strength
-    private Rigidbody rb;
+    public Rigidbody rb;
 
     void Start()
     {
-        rb = GameObject.FindGameObjectWithTag("Player").GetComponent<Rigidbody>();
         rb.useGravity = false; // Disable default gravity
         rb.constraints = RigidbodyConstraints.FreezeRotation; // Prevent default rotation
     }

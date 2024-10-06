@@ -1,73 +1,95 @@
+using System.Collections;
 using UnityEngine;
 
 public class SpaceshipController : MonoBehaviour
 {
     // Movement variables
-    public float moveSpeed = 10f;
-    public float rotationSpeed = 100f;
+    [SerializeField] private float moveSpeed = 10f;
+    [SerializeField] private float rotationSpeed = 100f;
 
     // Mouse rotation variables
-    public float mouseSensitivity = 2f;
+    [SerializeField] private float mouseSensitivity = 2f;
 
-    // Layer mask for the "Planet" layer
+    // Raycast variables
+    [SerializeField] private float raycastDistance = 5f;
+    [SerializeField] private LayerMask planetLayer;
 
-    public LayerMask planetLayer;
 
-    void Update()
+    [SerializeField] private float switchBuffer = 2f;
+    private float nextTimeSwitch;
+
+    public bool isStationed = true;
+
+    private void Update()
     {
+        if (isStationed)
+            return;
+
         HandleMovement();
         HandleMouseRotation();
-
-        // Shoot a raycast forward to check if it hits a "Planet"
-        if (Input.GetMouseButtonDown(0)) // Left mouse button to shoot raycast
-        {
-            ShootRaycast();
-        }
     }
 
-    void HandleMovement()
+    private void HandleMovement()
     {
-        // Get input for WASD movement
-        float moveHorizontal = Input.GetAxis("Horizontal"); // A/D for left/right
-        float moveVertical = Input.GetAxis("Vertical"); // W/S for forward/backward
+        float moveHorizontal = Input.GetAxis("Horizontal");
+        float moveVertical = Input.GetAxis("Vertical");
 
-        // Apply movement in local space
         Vector3 moveDirection = new Vector3(moveHorizontal, 0, moveVertical);
         transform.Translate(moveDirection * moveSpeed * Time.deltaTime, Space.Self);
     }
 
-    void HandleMouseRotation()
+    private void HandleMouseRotation()
     {
-        // Get mouse input
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
         float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
 
-        // Rotate the spaceship based on mouse movement
         transform.Rotate(Vector3.up, mouseX * rotationSpeed * Time.deltaTime, Space.World);
         transform.Rotate(Vector3.left, mouseY * rotationSpeed * Time.deltaTime, Space.Self);
     }
 
-    void ShootRaycast()
+    private void ShootRaycast()
     {
-        // Forward direction from the spaceship
         Vector3 forward = transform.TransformDirection(Vector3.forward);
 
-        // Shoot a raycast from the spaceship's position forward
-        RaycastHit hit;
-        if (Physics.Raycast(transform.position, forward, out hit, Mathf.Infinity, planetLayer))
+        if (Physics.Raycast(transform.position, forward, out RaycastHit hit, raycastDistance, planetLayer))
         {
-            // If the raycast hits an object on the "Planet" layer, do something
             Debug.Log("Hit a planet: " + hit.collider.name);
-
-            // Implement whatever action you want to happen upon hitting a planet
-            HandlePlanetHit(hit.collider);
+            HandlePlanetHit(hit);
         }
     }
 
-    void HandlePlanetHit(Collider planetCollider)
+    private void HandlePlanetHit(RaycastHit hit)
     {
-        // Example of doing something when a planet is hit
-        Debug.Log("Planet hit: " + planetCollider.name);
-        // Add your custom logic here, like initiating a landing sequence, etc.
+        Debug.Log("Planet hit: " + hit.transform.name);
+        PlayerManager.Instance.SetAsPlayer(hit.transform.GetComponent<Planet>(), hit.point);
+    }
+
+    public void SetPosition(Vector3 position)
+    {
+        transform.position = position;
+    }
+
+    public void EnableSpaceship()
+    {
+        isStationed = false;
+        nextTimeSwitch = Time.time + switchBuffer;
+    }
+
+    public void DisableSpaceship()
+    {
+        isStationed = true;
+        nextTimeSwitch = Time.time + switchBuffer;
+    }
+
+    private void OnCollisionEnter(Collision other)
+    {
+        if (other.gameObject.tag == "Player" && Time.time >= nextTimeSwitch)
+        {
+            PlayerManager.Instance.SetAsSpaceship();
+        }
+        if (other.gameObject.tag == "Planet" && Time.time >= nextTimeSwitch)
+        {
+            PlayerManager.Instance.SetAsPlayer(other.gameObject.GetComponent<Planet>(), other.contacts[0].point);
+        }
     }
 }

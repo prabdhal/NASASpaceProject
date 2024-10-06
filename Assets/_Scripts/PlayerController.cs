@@ -3,7 +3,6 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerController : MonoBehaviour
 {
-    public CameraManager cam;
     public float moveSpeed = 5f;
     public float rotationSpeed = 10f;
     public float jumpForce = 5f;
@@ -29,10 +28,6 @@ public class PlayerController : MonoBehaviour
         {
             Jump();
         }
-    }
-    private void LateUpdate()
-    {
-        //cam.HandleAllCameraMovement();
     }
 
     private void MoveInput()
@@ -91,7 +86,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Ground"))
+        if (collision.gameObject.CompareTag("Planet"))
         {
             isGrounded = true;
         }
@@ -99,9 +94,14 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionExit(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Ground"))
+        if (collision.gameObject.CompareTag("Planet"))
         {
             isGrounded = false;
         }
+    }
+
+    public void SetPosition(Vector3 position)
+    {
+        transform.position = position;
     }
 }

@@ -1,14 +1,30 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PlanetManager : MonoBehaviour
 {
+    #region Singleton
+    public static PlanetManager Instance;
+    private void Awake()
+    {
+        if (Instance == null)
+            Instance = this;
+        else
+            Destroy(Instance);  
+    }
+    #endregion
+
     public GameObject planetPrefab;  // The Planet prefab
     public int numberOfPlanets = 10; // Number of planets to generate
     public Vector2 distanceBetweenPlanets = new Vector2(200f, 500f); // Minimum distance between planets
     public Vector2 scaleRange = new Vector2(1f, 5f); // Range of scale for the planets
     public Vector2 gravityRange = new Vector2(0.2f, 20f); // Range of gravity for the planets
-    public Vector3 startingPosition = Vector3.zero; // Starting position for the first planet
+    private Vector3 startingPosition = Vector3.zero; // Starting position for the first planet
 
+    public List<Planet> Planets = new List<Planet>();
+    public Planet ActivePlanet;
+    public Rigidbody playerRb;
+    
     void Start()
     {
         GeneratePlanets();
@@ -43,18 +59,33 @@ public class PlanetManager : MonoBehaviour
             var distance = Random.Range(distanceBetweenPlanets.x, distanceBetweenPlanets.y);
             newPlanet.transform.position = Random.onUnitSphere * distance;
 
+            planetScript.rb = playerRb;
+
             if (i == 0)
             {
+                ActivePlanet = planetScript;
                 planetScript.enabled = true;
                 PlayerController player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
-                player.planet = planetScript.transform;
-                player.transform.position = planetScript.transform.position - new Vector3(0, randomScale/2, 0);
+                PlayerManager.Instance.SetAsPlayer(planetScript, planetScript.transform.position - new Vector3(0, randomScale / 2, 0));
             }
             else
             {
                 planetScript.enabled = false;
-            }            
+            } 
+            Planets.Add(planetScript);
         }
+    }
 
+    public void EnablePlanet(Planet planet)
+    {
+        if (planet == null) return;
+
+        planet.enabled = true;
+        ActivePlanet = planet;
+    }
+    public void DisablePlanet()
+    {
+        ActivePlanet.enabled = false;
+        ActivePlanet = null;
     }
 }

@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 2389726882019074057}
   m_Layer: 6
   m_Name: Planet
-  m_TagString: Ground
+  m_TagString: Planet
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -120,3 +120,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   renderer: {fileID: 4040015954910103114}
   gravity: 10
+  rb: {fileID: 0}
