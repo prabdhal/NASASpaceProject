@@ -34,10 +34,8 @@ public class PlanetManager : GlobalMonoBehaviour
 
             // Randomize gravity
             Planet planetScript = newPlanet.GetComponent<Planet>();
-            if (planetScript != null)
-            {
-                planetScript.gravity = Random.Range(gravityRange.x, gravityRange.y);
-            }
+            planetScript.gravity = Random.Range(gravityRange.x, gravityRange.y);
+            
 
             // Calculate the next position, randomizing it slightly around a base distance
             var distance = Random.Range(distanceBetweenPlanets.x, distanceBetweenPlanets.y);

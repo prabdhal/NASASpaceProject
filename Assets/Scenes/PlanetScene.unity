@@ -204,7 +204,7 @@ MonoBehaviour:
     type: 3}
   numberOfPlanets: 10
   distanceBetweenPlanets: {x: 400, y: 1000}
-  scaleRange: {x: 30, y: 80}
+  scaleRange: {x: 300, y: 320}
   gravityRange: {x: 0.2, y: 20}
   Planets: []
 --- !u!4 &95149429
@@ -431,6 +431,11 @@ PrefabInstance:
       propertyPath: Global
       value: 
       objectReference: {fileID: 1259678348}
+    - target: {fileID: 4328155190176273896, guid: c2b7d3171c83efb41a1f76fd50117441,
+        type: 3}
+      propertyPath: moveSpeed
+      value: 40
+      objectReference: {fileID: 0}
     - target: {fileID: 4839376271489442760, guid: c2b7d3171c83efb41a1f76fd50117441,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1185,6 +1190,12 @@ MonoBehaviour:
   currentPlanet: {fileID: 0}
   playerCamera: {fileID: 1528589788}
   shipCamera: {fileID: 195754216}
+  OnPlayerMode:
+    m_PersistentCalls:
+      m_Calls: []
+  OnSpaceshipMode:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &1291306361 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4328155190176273896, guid: c2b7d3171c83efb41a1f76fd50117441,
