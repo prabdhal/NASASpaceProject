@@ -374,9 +374,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a6724a41aca6424f956a68e4fb36666, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cam: {fileID: 0}
+  Global: {fileID: 0}
   moveSpeed: 15
-  rotationSpeed: 1.5
+  rotationSpeed: 1
   jumpForce: 5
   planet: {fileID: 0}
 --- !u!1 &8813277808687935800

@@ -43,7 +43,7 @@ public class ModeManager : GlobalMonoBehaviour
         }
     }
 
-    public void SetAsPlayer(Planet planet, Vector3 spawnPoint)
+    public void SetPlayerMode(Planet planet, Vector3 spawnPoint)
     {
         Global.player.SetPosition(spawnPoint);
         Global.player.gameObject.SetActive(true);
@@ -59,16 +59,19 @@ public class ModeManager : GlobalMonoBehaviour
 
         //ShootRaycast(player.transform.position);
         StartCoroutine(DelayRay());
+
+        Global.OnPlayerMode?.Invoke();
     }
 
-    public void SetAsSpaceship()
+    public void SetSpaceshipMode()
     {
         //spaceship.SetPosition(spawnPosition);
         Global.player.gameObject.SetActive(false);
         Global.spaceship.EnableSpaceship();
         Global.playerCamera.gameObject.SetActive(false);
         Global.shipCamera.gameObject.SetActive(true);
-
         Global.planetManager.DisablePlanet();
+
+        Global.OnSpaceshipMode?.Invoke();
     }
 }

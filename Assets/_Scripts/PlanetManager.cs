@@ -47,7 +47,7 @@ public class PlanetManager : GlobalMonoBehaviour
             {
                 Global.currentPlanet = planetScript;
                 planetScript.enabled = true;
-                Global.modeManager.SetAsPlayer(planetScript, planetScript.transform.position - new Vector3(0, randomScale / 2, 0));
+                Global.modeManager.SetPlayerMode(planetScript, planetScript.transform.position - new Vector3(0, randomScale / 2, 0));
             }
             else
             {

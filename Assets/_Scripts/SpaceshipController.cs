@@ -62,7 +62,7 @@ public class SpaceshipController : GlobalMonoBehaviour
     private void HandlePlanetHit(RaycastHit hit)
     {
         Debug.Log("Planet hit: " + hit.transform.name);
-        Global.modeManager.SetAsPlayer(hit.transform.GetComponent<Planet>(), hit.point);
+        Global.modeManager.SetPlayerMode(hit.transform.GetComponent<Planet>(), hit.point);
     }
 
     public void SetPosition(Vector3 position)
@@ -86,11 +86,11 @@ public class SpaceshipController : GlobalMonoBehaviour
     {
         if (other.gameObject.tag == "Player" && Time.time >= nextTimeSwitch)
         {
-            Global.modeManager.SetAsSpaceship();
+            Global.modeManager.SetSpaceshipMode();
         }
         if (other.gameObject.tag == "Planet" && Time.time >= nextTimeSwitch)
         {
-            Global.modeManager.SetAsPlayer(other.gameObject.GetComponent<Planet>(), other.contacts[0].point);
+            Global.modeManager.SetPlayerMode(other.gameObject.GetComponent<Planet>(), other.contacts[0].point);
         }
     }
 }
