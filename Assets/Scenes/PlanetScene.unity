@@ -133,7 +133,7 @@ GameObject:
   - component: {fileID: 21392586}
   - component: {fileID: 21392585}
   m_Layer: 0
-  m_Name: PlayerManager
+  m_Name: ModeManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -151,8 +151,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 616fec3d36b11aa41b9fcc3de9881e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 1291306361}
-  spaceship: {fileID: 1934661949}
+  Global: {fileID: 1259678348}
   planetLayer:
     serializedVersion: 2
     m_Bits: 64
@@ -200,6 +199,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eada7be7d1000374fa7bee0e386da4c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Global: {fileID: 1259678348}
   planetPrefab: {fileID: 3183425262024805233, guid: 2a8553f6115b88d4a93b9abfbf4c17a8,
     type: 3}
   numberOfPlanets: 10
@@ -207,8 +207,6 @@ MonoBehaviour:
   scaleRange: {x: 30, y: 80}
   gravityRange: {x: 0.2, y: 20}
   Planets: []
-  ActivePlanet: {fileID: 0}
-  playerRb: {fileID: 1291306362}
 --- !u!4 &95149429
 Transform:
   m_ObjectHideFlags: 0
@@ -253,6 +251,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7391cbdee05706d4db19ee5c677bb59a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Global: {fileID: 1259678348}
   player: {fileID: 1934661950}
   offset: {x: 0, y: 0, z: 0}
   lerpSpeed: 0
@@ -427,6 +426,11 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4328155190176273896, guid: c2b7d3171c83efb41a1f76fd50117441,
+        type: 3}
+      propertyPath: Global
+      value: 
+      objectReference: {fileID: 1259678348}
     - target: {fileID: 4839376271489442760, guid: c2b7d3171c83efb41a1f76fd50117441,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1129,6 +1133,58 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1259678346
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1259678347}
+  - component: {fileID: 1259678348}
+  m_Layer: 0
+  m_Name: GlobalReferences
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1259678347
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1259678346}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 214.76802, y: -922.5592, z: -214.6922}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2123227848}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1259678348
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1259678346}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5676c649c869e8d4dad9d68f3fe472d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  modeManager: {fileID: 21392585}
+  player: {fileID: 1291306361}
+  playerRb: {fileID: 1291306362}
+  spaceship: {fileID: 1934661949}
+  planetManager: {fileID: 95149428}
+  currentPlanet: {fileID: 0}
+  playerCamera: {fileID: 1528589788}
+  shipCamera: {fileID: 195754216}
 --- !u!114 &1291306361 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4328155190176273896, guid: c2b7d3171c83efb41a1f76fd50117441,
@@ -1198,6 +1254,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3168abd7e18e48f40bc452e01457e3b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Global: {fileID: 1259678348}
   player: {fileID: 1291306366}
   offset: {x: 0, y: 7, z: -9}
   lerpSpeed: 0
@@ -1232,9 +1289,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53f46ddf2aac4174d8d38bf641a5e4d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Global: {fileID: 1259678348}
   moveSpeed: 10
   rotationSpeed: 100
-  mouseSensitivity: 2
+  mouseSensitivity: 4
   raycastDistance: 5
   planetLayer:
     serializedVersion: 2
@@ -1336,6 +1394,7 @@ Transform:
   m_Children:
   - {fileID: 410087041}
   - {fileID: 832575519}
+  - {fileID: 1259678347}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
@@ -1344,10 +1403,10 @@ SceneRoots:
   m_Roots:
   - {fileID: 2123227848}
   - {fileID: 21392586}
-  - {fileID: 1528589787}
-  - {fileID: 195754217}
+  - {fileID: 1102887828}
   - {fileID: 95149429}
   - {fileID: 863894461}
+  - {fileID: 1528589787}
+  - {fileID: 195754217}
   - {fileID: 300194150}
   - {fileID: 1934661950}
-  - {fileID: 1102887828}

@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
-public class PlayerController : MonoBehaviour
+public class PlayerController : GlobalMonoBehaviour
 {
     public float moveSpeed = 5f;
     public float rotationSpeed = 10f;
@@ -15,10 +15,8 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
-        rb = GetComponent<Rigidbody>();
+        rb = Global.playerRb;
         cameraTransform = Camera.main.transform; // Reference the camera
-        rb.useGravity = false; // Disable default gravity
-        rb.constraints = RigidbodyConstraints.FreezeRotation; // Prevent default rotation
     }
 
     void Update()

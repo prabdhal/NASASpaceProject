@@ -1,27 +1,21 @@
 using UnityEngine;
 
-public class Planet : MonoBehaviour
+public class Planet : GlobalMonoBehaviour
 {
-    public MeshRenderer renderer;
-    public float gravity = 10f; // Gravity strength
-    public Rigidbody rb;
+    public float gravity;
 
-    void Start()
+    private void Awake()
     {
-        rb.useGravity = false; // Disable default gravity
-        rb.constraints = RigidbodyConstraints.FreezeRotation; // Prevent default rotation
+        Global = FindAnyObjectByType<Global>();
     }
 
+    // Apply a gravitational pull towards this planet to the player, and set player's body upright to it
     void FixedUpdate()
     {
-        Vector3 gravityDirection = (rb.transform.position - transform.position).normalized;
-        Vector3 playerUp = rb.transform.up;
+        Vector3 gravityDirection = (Global.playerRb.transform.position - transform.position).normalized;
+        Vector3 playerUp = Global.playerRb.transform.up;
 
-        // Apply gravity force toward the planet
-        rb.AddForce(gravityDirection * -gravity);
-
-        // Rotate the player to align with the planet's surface
-        Quaternion targetRotation = Quaternion.FromToRotation(playerUp, gravityDirection) * rb.transform.rotation;
-        rb.transform.rotation = Quaternion.Slerp(rb.transform.rotation, targetRotation, 50 * Time.deltaTime);
+        Global.playerRb.AddForce(gravityDirection * -gravity);
+        Global.playerRb.transform.rotation = Quaternion.FromToRotation(playerUp, gravityDirection) * Global.playerRb.transform.rotation;
     }
 }

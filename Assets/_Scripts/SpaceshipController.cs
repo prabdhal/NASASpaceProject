@@ -1,19 +1,18 @@
 using System.Collections;
 using UnityEngine;
 
-public class SpaceshipController : MonoBehaviour
+public class SpaceshipController : GlobalMonoBehaviour
 {
     // Movement variables
     [SerializeField] private float moveSpeed = 10f;
     [SerializeField] private float rotationSpeed = 100f;
 
     // Mouse rotation variables
-    [SerializeField] private float mouseSensitivity = 2f;
+    [SerializeField] private float mouseSensitivity;
 
     // Raycast variables
     [SerializeField] private float raycastDistance = 5f;
     [SerializeField] private LayerMask planetLayer;
-
 
     [SerializeField] private float switchBuffer = 2f;
     private float nextTimeSwitch;
@@ -23,7 +22,9 @@ public class SpaceshipController : MonoBehaviour
     private void Update()
     {
         if (isStationed)
+        {
             return;
+        }
 
         HandleMovement();
         HandleMouseRotation();
@@ -61,7 +62,7 @@ public class SpaceshipController : MonoBehaviour
     private void HandlePlanetHit(RaycastHit hit)
     {
         Debug.Log("Planet hit: " + hit.transform.name);
-        PlayerManager.Instance.SetAsPlayer(hit.transform.GetComponent<Planet>(), hit.point);
+        Global.modeManager.SetAsPlayer(hit.transform.GetComponent<Planet>(), hit.point);
     }
 
     public void SetPosition(Vector3 position)
@@ -85,11 +86,11 @@ public class SpaceshipController : MonoBehaviour
     {
         if (other.gameObject.tag == "Player" && Time.time >= nextTimeSwitch)
         {
-            PlayerManager.Instance.SetAsSpaceship();
+            Global.modeManager.SetAsSpaceship();
         }
         if (other.gameObject.tag == "Planet" && Time.time >= nextTimeSwitch)
         {
-            PlayerManager.Instance.SetAsPlayer(other.gameObject.GetComponent<Planet>(), other.contacts[0].point);
+            Global.modeManager.SetAsPlayer(other.gameObject.GetComponent<Planet>(), other.contacts[0].point);
         }
     }
 }

@@ -1,19 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlanetManager : MonoBehaviour
+public class PlanetManager : GlobalMonoBehaviour
 {
-    #region Singleton
-    public static PlanetManager Instance;
-    private void Awake()
-    {
-        if (Instance == null)
-            Instance = this;
-        else
-            Destroy(Instance);  
-    }
-    #endregion
-
     public GameObject planetPrefab;  // The Planet prefab
     public int numberOfPlanets = 10; // Number of planets to generate
     public Vector2 distanceBetweenPlanets = new Vector2(200f, 500f); // Minimum distance between planets
@@ -22,8 +11,6 @@ public class PlanetManager : MonoBehaviour
     private Vector3 startingPosition = Vector3.zero; // Starting position for the first planet
 
     public List<Planet> Planets = new List<Planet>();
-    public Planet ActivePlanet;
-    public Rigidbody playerRb;
     
     void Start()
     {
@@ -43,10 +30,7 @@ public class PlanetManager : MonoBehaviour
 
             // Randomize color
             Renderer renderer = newPlanet.GetComponent<Renderer>();
-            if (renderer != null)
-            {
-                renderer.material.color = new Color(Random.value, Random.value, Random.value);
-            }
+            renderer.material.color = new Color(Random.value, Random.value, Random.value);            
 
             // Randomize gravity
             Planet planetScript = newPlanet.GetComponent<Planet>();
@@ -59,14 +43,11 @@ public class PlanetManager : MonoBehaviour
             var distance = Random.Range(distanceBetweenPlanets.x, distanceBetweenPlanets.y);
             newPlanet.transform.position = Random.onUnitSphere * distance;
 
-            planetScript.rb = playerRb;
-
             if (i == 0)
             {
-                ActivePlanet = planetScript;
+                Global.currentPlanet = planetScript;
                 planetScript.enabled = true;
-                PlayerController player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
-                PlayerManager.Instance.SetAsPlayer(planetScript, planetScript.transform.position - new Vector3(0, randomScale / 2, 0));
+                Global.modeManager.SetAsPlayer(planetScript, planetScript.transform.position - new Vector3(0, randomScale / 2, 0));
             }
             else
             {
@@ -78,14 +59,12 @@ public class PlanetManager : MonoBehaviour
 
     public void EnablePlanet(Planet planet)
     {
-        if (planet == null) return;
-
         planet.enabled = true;
-        ActivePlanet = planet;
+        Global.currentPlanet = planet;
     }
     public void DisablePlanet()
     {
-        ActivePlanet.enabled = false;
-        ActivePlanet = null;
+        Global.currentPlanet.enabled = false;
+        Global.currentPlanet = null;
     }
 }
